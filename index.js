@@ -31,6 +31,7 @@ async function run() {
     // Send a ping to confirm a successful connection
     const allDoctor = client.db('DoctorDb').collection('doctor')
     const allServices = client.db('DoctorDb').collection('services')
+    const usersCollection = client.db('DoctorDb').collection('users')
 
 
      app.get('/doctor', async(req,res)=>{
@@ -53,6 +54,22 @@ async function run() {
           res.send(result)
      })
 
+     // user api 
+     app.get('/users',  async(req,res)=>{
+          const result = await usersCollection.find().toArray()
+          res.send(result)
+     })
+
+     app.post('/users', async(req,res)=>{
+          const user = req.body;
+          const query = {email : user.email}
+          const existingUser = await usersCollection.findOne(query)
+          if(existingUser){
+               return res.send({message:"User already exists"})
+          }
+          const result = await usersCollection.insertOne(user)
+          res.send(result);
+     })
 
 
 
